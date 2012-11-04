@@ -168,6 +168,7 @@ storageModule = ((window, document) ->
 
     return {
         setup: (newSettings) ->
+            newSettings = newSettings || {}
             settings = merge_options {defaultSettings, newSettings}
             getComponent()
 

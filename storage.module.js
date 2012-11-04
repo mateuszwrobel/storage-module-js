@@ -241,6 +241,7 @@ storageModule = (function(window, document) {
   };
   return {
     setup: function(newSettings) {
+      newSettings = newSettings || {};
       settings = merge_options({
         defaultSettings: defaultSettings,
         newSettings: newSettings
