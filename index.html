@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Js2coffee: convert JavaScript code to CoffeeScript</title>
+		<meta charset='UTF-8' />
+		<script type="text/javascript" src="storage.module.js"></script>
+	</head>
+	<body>
+		<div>
+			<h1>Storage module demo</h1>
+		</div>
+		<div>
+			<h2>Cookies</h2>
+			<button onclick="alert(storageModule.write('newCookie', 'new cookie'));">Set Cookie</button>
+			<button onclick="alert(storageModule.read('newCookie'));">Get Cookie</button>
+			<button onclick="alert(storageModule.isset('newCookie'));">IsSet Cookie</button>
+			<button onclick="alert(storageModule.unset('newCookie'));">UnSet Cookie</button>
+			<button onclick="console.log(storageModule.getAll());">Get all cookies</button>
+		</div>
+		<div>
+			<h2>Local Storage</h2>
+			<button onclick="alert(storageModule.setup({storageType: 'localStorage'}).write('newLocalStorageVariable', 'local storage variable value'));">Set local var</button>
+			<button onclick="alert(storageModule.setup({storageType: 'localStorage'}).read('newLocalStorageVariable'));">Get local var</button>
+			<button onclick="alert(storageModule.setup({storageType: 'localStorage'}).isset('newLocalStorageVariable'));">IsSet local var</button>
+			<button onclick="alert(storageModule.setup({storageType: 'localStorage'}).unset('newLocalStorageVariable'));">UnSet local var</button>
+			<button onclick="storageModule.setup({storageType: 'localStorage'}).getAll();">Get all vars</button>
+		</div>
+		<div>
+			<h2>Session Storage</h2>
+			<button onclick="alert(storageModule.setup({storageType: 'sessionStorage'}).write('newSessionStorageVariable', 'session storage variable value'));">Set session var</button>
+			<button onclick="alert(storageModule.setup({storageType: 'sessionStorage'}).read('newSessionStorageVariable'));">Get session var</button>
+			<button onclick="alert(storageModule.setup({storageType: 'sessionStorage'}).isset('newSessionStorageVariable'));">IsSet session var</button>
+			<button onclick="alert(storageModule.setup({storageType: 'sessionStorage'}).unset('newSessionStorageVariable'));">UnSet session var</button>
+			<button onclick="storageModule.setup({storageType: 'sessionStorage'}).getAll();">Get all session vars</button>
+		</div>
+	</body>
+</html>
