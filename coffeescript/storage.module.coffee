@@ -22,23 +22,28 @@ storageModule = ((window, document) ->
         settings
 
     class storageComponent
+        @pluses = /\+/g
+
         constructor: () ->
 
+        @raw = (string) ->
+            string
+
+        @decode = (string) ->
+            decodeURIComponent string.replace @pluses, ' '
+
         setValue: (value) ->
+            value = if settings.raw then value else encodeURIComponent value
+
             (if settings.json then JSON.stringify(value) else String(value))
 
         getValue: (value) ->
+            value = if settings.raw then value else @decode value
+
             (if settings.json then JSON.parse(value) else value)
 
     class cookiesComponent extends storageComponent
         constructor: () ->
-            @pluses = /\+/g
-
-            @raw = (string) ->
-                string
-
-            @decoded = (string) ->
-                decodeURIComponent(string.replace(@pluses, ' '))
 
         write: (name, value) =>
             time = -1 if value is null
@@ -53,7 +58,7 @@ storageModule = ((window, document) ->
 
             value = @setValue value
 
-            (document.cookie = [
+            document.cookie = [
                     encodeURIComponent(name)
                     '='
                     (if settings.raw then value else encodeURIComponent(value))
@@ -61,7 +66,7 @@ storageModule = ((window, document) ->
                     (if settings.path then '; path=' + settings.path else '')
                     (if settings.domain then '; domain=' + settings.domain else '')
                     (if settings.secure then '; secure' else '')
-                ].join(''))
+                ].join ''
 
         read: (name) ->
             decode = (if settings.raw then @raw else @decoded)
@@ -90,13 +95,13 @@ storageModule = ((window, document) ->
 
         getAll: () ->
             decode = (if settings.raw then @raw else @decoded)
-            cookies = document.cookie.split('; ')
+            cookies = document.cookie.split '; '
 
-            allData = {}
+            allData = []
             for cookie in cookies
-                part = cookie.split('=')
-                name = decode(part.shift())
-                cookie = decode(part.join('='))
+                part = cookie.split '='
+                name = decode part.shift
+                cookie = decode part.join '='
                 allData[name] = cookie
             allData
 
@@ -105,19 +110,19 @@ storageModule = ((window, document) ->
         constructor: () ->
 
         write: (name, value) ->
-            sessionStorage[name] = @setValue value
+            sessionStorage.setItem name, @setValue value
 
         read: (name) ->
-            @getValue sessionStorage[name]
+            @getValue sessionStorage.getItem name
 
         unset: (name) ->
-            delete sessionStorage[name]
+            sessionStorage.removeItem name
 
         isset: (name) ->
             sessionStorage.hasOwnProp name
 
         getAll: () ->
-            allData = {}
+            allData = []
             for attr of sessionStorage
                 allData[attr] = @getValue sessionStorage[attr]
             allData
@@ -126,7 +131,7 @@ storageModule = ((window, document) ->
         constructor: () ->
 
         write: (name, value) ->
-            localStorage.setItem @setValue value
+            localStorage.setItem name, @setValue value
 
         read: (name) ->
             @getValue localStorage.getItem name
@@ -138,7 +143,7 @@ storageModule = ((window, document) ->
             localStorage.hasOwnProp name
 
         getAll: () ->
-            allData = {}
+            allData = []
             for attr of localStorage
                 allData[attr] = @getValue localStorage[attr]
             allData
@@ -153,11 +158,16 @@ storageModule = ((window, document) ->
 
         createComponent: =>
             componentClass = 'cookies'
+            componenetClasses = [
+                'cookies'
+                'localStorage'
+                'sessionStorage'
+            ]
             switch settings.storageType
                 when 'localStorage', 'sessionStorage'
                     if not Storage? then settings.storageType = 'cookies'
                     componentClass = settings.storageType
-            componentClass = components[settings.storageType+'Component']
+            componentClass = components[settings.storageType + 'Component']
             new componentClass()
 
     getComponent = () ->

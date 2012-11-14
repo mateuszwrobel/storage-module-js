@@ -29,9 +29,20 @@ storageModule = (function(window, document) {
   };
   storageComponent = (function() {
 
+    storageComponent.pluses = /\+/g;
+
     function storageComponent() {}
 
+    storageComponent.raw = function(string) {
+      return string;
+    };
+
+    storageComponent.decode = function(string) {
+      return decodeURIComponent(string.replace(this.pluses, ' '));
+    };
+
     storageComponent.prototype.setValue = function(value) {
+      value = settings.raw ? value : encodeURIComponent(value);
       if (settings.json) {
         return JSON.stringify(value);
       } else {
@@ -40,6 +51,7 @@ storageModule = (function(window, document) {
     };
 
     storageComponent.prototype.getValue = function(value) {
+      value = settings.raw ? value : this.decode(value);
       if (settings.json) {
         return JSON.parse(value);
       } else {
@@ -56,13 +68,7 @@ storageModule = (function(window, document) {
 
     function cookiesComponent() {
       this.write = __bind(this.write, this);
-      this.pluses = /\+/g;
-      this.raw = function(string) {
-        return string;
-      };
-      this.decoded = function(string) {
-        return decodeURIComponent(string.replace(this.pluses, ' '));
-      };
+
     }
 
     cookiesComponent.prototype.write = function(name, value) {
@@ -120,11 +126,11 @@ storageModule = (function(window, document) {
       var allData, cookie, cookies, decode, name, part, _i, _len;
       decode = (settings.raw ? this.raw : this.decoded);
       cookies = document.cookie.split('; ');
-      allData = {};
+      allData = [];
       for (_i = 0, _len = cookies.length; _i < _len; _i++) {
         cookie = cookies[_i];
         part = cookie.split('=');
-        name = decode(part.shift());
+        name = decode(part.shift);
         cookie = decode(part.join('='));
         allData[name] = cookie;
       }
@@ -141,15 +147,15 @@ storageModule = (function(window, document) {
     function sessionStorageComponent() {}
 
     sessionStorageComponent.prototype.write = function(name, value) {
-      return sessionStorage[name] = this.setValue(value);
+      return sessionStorage.setItem(name, this.setValue(value));
     };
 
     sessionStorageComponent.prototype.read = function(name) {
-      return this.getValue(sessionStorage[name]);
+      return this.getValue(sessionStorage.getItem(name));
     };
 
     sessionStorageComponent.prototype.unset = function(name) {
-      return delete sessionStorage[name];
+      return sessionStorage.removeItem(name);
     };
 
     sessionStorageComponent.prototype.isset = function(name) {
@@ -158,7 +164,7 @@ storageModule = (function(window, document) {
 
     sessionStorageComponent.prototype.getAll = function() {
       var allData, attr;
-      allData = {};
+      allData = [];
       for (attr in sessionStorage) {
         allData[attr] = this.getValue(sessionStorage[attr]);
       }
@@ -175,7 +181,7 @@ storageModule = (function(window, document) {
     function localStorageComponent() {}
 
     localStorageComponent.prototype.write = function(name, value) {
-      return localStorage.setItem(this.setValue(value));
+      return localStorage.setItem(name, this.setValue(value));
     };
 
     localStorageComponent.prototype.read = function(name) {
@@ -192,7 +198,7 @@ storageModule = (function(window, document) {
 
     localStorageComponent.prototype.getAll = function() {
       var allData, attr;
-      allData = {};
+      allData = [];
       for (attr in localStorage) {
         allData[attr] = this.getValue(localStorage[attr]);
       }
@@ -215,8 +221,9 @@ storageModule = (function(window, document) {
     }
 
     componentFactory.prototype.createComponent = function() {
-      var componentClass;
+      var componenetClasses, componentClass;
       componentClass = 'cookies';
+      componenetClasses = ['cookies', 'localStorage', 'sessionStorage'];
       switch (settings.storageType) {
         case 'localStorage':
         case 'sessionStorage':
