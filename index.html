@@ -1,0 +1,132 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Storage-module-js by Okotetto</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Storage-module-js</h1>
+        <p>JS stand alone module for cookies, localStorage and sessionStorage</p>
+
+        <p class="view"><a href="https://github.com/Okotetto/storage-module-js">View the Project on GitHub <small>Okotetto/storage-module-js</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/Okotetto/storage-module-js/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/Okotetto/storage-module-js/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/Okotetto/storage-module-js">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>storage.module.js</h1>
+
+<p>Simple standalone module for reading, writeng and deleting cookies and also for handling localStorage and sessionStorage.</p>
+
+<h2>Installation</h2>
+
+<p>You don't need any additional library.</p>
+
+<pre><code>&lt;script src="/path/to/storage.module.js"&gt;&lt;/script&gt;
+</code></pre>
+
+<h2>Usage</h2>
+
+<p>Simple cookie creation:</p>
+
+<pre><code>storageModule.write('cookie', 'cookie value');
+</code></pre>
+
+<p>Simple cookie reading:</p>
+
+<pre><code>storageModule.read('cookie');
+</code></pre>
+
+<p>Simple cookie remove:</p>
+
+<pre><code>storageModyle.unset('cookie');
+</code></pre>
+
+<p>A little better cookie creation:</p>
+
+<pre><code>var cookieLayer = storageModule.setup();
+cookieLayer.write('cookie', 'cookie value');
+</code></pre>
+
+<p>Cookie creation with settings:</p>
+
+<pre><code>var cookieLayer = storageModule.setup(
+        {
+            json: true,
+            path: your/path,
+            domain: your.domain,
+            expires: 1, // days to expire
+            secure: true
+            raw: true // no encoding
+        }
+    );
+</code></pre>
+
+<p>Simple localStorage creation:</p>
+
+<pre><code>storageModule.setup({storageType: 'localStorage'}).write('localVar', 'local var value');
+</code></pre>
+
+<p>Simple localStorage reading:</p>
+
+<pre><code>storageModule.setup({storageType: 'localStorage'}).read('localVar');
+</code></pre>
+
+<p>A better localStorage handling:</p>
+
+<pre><code>var localStorageLayer = storageModule.setup({storageType: 'localStorage'});
+localStorageLayer.write('localVar', 'local var value');
+if (localStorageLayer.isset('localVar'))
+    localStorageLayer.read('localVar');
+</code></pre>
+
+<p>Session Storage is the same like local storage.</p>
+
+<p>Public functions:</p>
+
+<pre><code>function write (key, value)
+function read (key)
+function unset (key)
+function isset (key)
+function getAll ()
+</code></pre>
+
+<h2>Development</h2>
+
+<ul>
+<li>Source hosted at <a href="https://github.com/Okotetto/storage-module-js">GitHub</a>
+</li>
+<li>Report issues, questions, feature requests on <a href="https://github.com/Okotetto/storage-module-js/issues">GitHub Issues</a>
+</li>
+</ul><p>Pull requests are very welcome! Make sure your patches are well tested. Please create a topic branch for every separate change you make.</p>
+
+<h2>Authors</h2>
+
+<p><a href="https://github.com/Okotetto">Mateusz Wróbel</a></p>
+
+<p>Cookie handling by
+<a href="https://github.com/carhartl">Klaus Hartl</a> <a href="https://github.com/carhartl/jquery-cookie">jquery-cookie</a></p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/Okotetto">Okotetto</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
