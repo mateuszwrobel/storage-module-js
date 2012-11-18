@@ -1,18 +1,18 @@
 var storageModule = ( function ( window, document, undefined ) {
 
-	var settings;
-	var defaultSettings;
-	var mergeObjects;
-	var storageComponenet;
-	var getComponenet;
-	var componentFactory;
-	var factoryInstance = null;
 	var component = null;
+	var componentFactory;
+	var defaultSettings;
+	var factoryInstance = null;
+	var getComponenet;
+	var mergeObjects;
+	var settings;
+	var storageComponenet;
 
 	settings = defaultSettings = {
 		debug: false,
 		expires: 1,
-		json: false,
+		json: true,
 		path: false,
 		raw: false,
 		storageType: 'cookies'
@@ -43,6 +43,7 @@ var storageModule = ( function ( window, document, undefined ) {
 		var read;
 		var sessionStorageComponenet;
 		var setValue;
+		var storage;
 		var unset;
 		var write;
 
@@ -54,13 +55,13 @@ var storageModule = ( function ( window, document, undefined ) {
 
 		setValue = function ( value ) {
 
-			value = settings.raw ? value : encodeURIComponent( value );
-
 			if ( settings.json ) {
-				return JSON.stringify( value );
+				value = JSON.stringify( value );
+			} else {
+				value = String( value );
 			}
+			return settings.raw ? value : encodeURIComponent( value );
 
-			return String( value );
 		};
 
 		getValue = function ( value ) {
@@ -71,6 +72,42 @@ var storageModule = ( function ( window, document, undefined ) {
 				return JSON.parse( value );
 			}
 			return value;
+		};
+
+		write = function ( name, value, undefined ) {
+			if ( name === 'length')
+				throw '\'length\' is reserved name of variable';
+			
+			storage.setItem( name, setValue( value ) );
+
+			return true;
+		};
+
+
+		read = function ( name ) {
+			return getValue( storage.getItem( name ) );
+		};
+
+		unset = function ( name ) {
+			return storage.removeItem( name );
+		};
+
+		isset = function ( name ) {
+			return name in storage;
+		};
+
+		getAll = function () {
+			var allData = {};
+			var attr;
+
+			allData.length = 0;
+
+			for ( attr in storage ) {
+				allData[ attr ] = getValue( storage.getItem( attr ) );
+				allData.length += 1;
+			}
+
+			return allData;
 		};
 
 		cookiesComponent = function() {
@@ -139,9 +176,10 @@ var storageModule = ( function ( window, document, undefined ) {
 			};
 
 			isset = function ( name ) {
-				var cookie, part,
-					decode = ( settings.raw ? raw : decoded ),
-					cookies = document.cookie.split('; ');
+				var cookie;
+				var part;
+				var decode = ( settings.raw ? raw : decoded );
+				var cookies = document.cookie.split('; ');
 
 				for ( cookie in cookies ) {
 					part = cookie.split( '=' );
@@ -179,56 +217,24 @@ var storageModule = ( function ( window, document, undefined ) {
 		};
 
 		localStorageComponent = function () {
+			storage = localStorage;
 			return {
-				write: function ( name, value, undefined) {
-					return localStorage.setItem( name, setValue( value ) );
-				},
-				read: function ( name ) {
-					return getValue( localStorage.getItem( name ) );
-				},
-				unset: function ( name ) {
-					return localStorage.removeItem( name );
-				},
-				isset: function ( name ) {
-					return name in localStorage;
-				},
-				getAll: function () {
-					var allData = {};
-					var attr;
-
-					for ( attr in localStorage ) {
-						allData[ attr ] = getValue( localStorage.getItem( attr ) );
-					}
-
-					return allData;
-				}
+				write: write,
+				read: read,
+				unset: unset,
+				isset: isset,
+				getAll: getAll
 			};
 		};
 
 		sessionStorageComponenet = function () {
+			storage = sessionStorage;
 			return {
-				write: function ( name, value, undefined ) {
-					return sessionStorage.setItem( name, setValue( value ) );
-				},
-				read: function ( name ) {
-					return getValue( sessionStorage.getItem( name ) );
-				},
-				unset: function ( name ) {
-					return sessionStorage.removeItem( name );
-				},
-				isset: function ( name ) {
-					return sessionStorage.hasOwnProp ( name );
-				},
-				getAll: function () {
-					var allData = {};
-					var attr;
-
-					for ( attr in sessionStorage ) {
-						allData[ attr ] = getValue( sessionStorage.getItem( attr ) );
-					}
-
-					return allData;
-				}
+				write: write,
+				read: read,
+				unset: unset,
+				isset: isset,
+				getAll: getAll
 			};
 		};
 
@@ -251,7 +257,6 @@ var storageModule = ( function ( window, document, undefined ) {
 				'sessionStorage'
 			];
 
-			console.log (component+' '+settings.storageType+' '+components.indexOf(settings.storageType));
 			if ( component !== settings.storageType && components.indexOf(settings.storageType) > -1 ) {
 				if ( !( typeof Storage !== "undefined" && Storage !== null ) ) {
 					if ( typeof console === 'object') {
@@ -265,8 +270,8 @@ var storageModule = ( function ( window, document, undefined ) {
 					}
 					settings.storageType = 'cookies';
 				}
-			} else if ( components.indexOf(settings.storageType) === -1 ) {
-				if ( typeof console === 'object') {
+			} else if ( components.indexOf( settings.storageType ) === -1 ) {
+				if ( typeof console === 'object' ) {
 					console.log( 'Unnown storage type' );
 					return null;
 				}
